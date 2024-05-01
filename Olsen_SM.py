@@ -8,6 +8,8 @@ import pywhatkit
 icon = os.path.join('.', 'images', 'icon.ico')
 
 # functions
+path_img = None
+
 def selecionar_planilha():
     global path_pl
     diretorio_planilha = filedialog.askopenfile(
@@ -29,19 +31,18 @@ def selecionar_imagem():
     if diretorio_img:
         path_img = diretorio_img.name
         diretorioimg_texto.insert(END, path_img)
+    
 
-def enviar_mensagem():
+def enviar_mensagem(path_img=None):
     df = pd.read_excel(path_pl, dtype=str)
-
     for index, row in df.iterrows():
         phone_number = row['Número']
         name = row['Nome']
         message = row['Mensagem']
-        if path_img:
-            pywhatkit.sendwhats_image(phone_number, path_img, caption=message, wait_time=10, tab_close=True)
+        if path_img is None:
+            pywhatkit.sendwhatmsg_instantly(phone_number, message=message, wait_time=10, tab_close=True)
         else:
-            pywhatkit.sendwhatmsg_instantly(phone_number, message, 10, tab_close=True)
-
+            pywhatkit.sendwhats_image(phone_number, path_img, caption=message, wait_time=12, tab_close=True)
 
 # Creating the app
 root = Tk()
@@ -67,7 +68,7 @@ diretorioimg_texto = Text(root, width=30, height=0)
 diretorioimg_texto.place(x=130, y=153)
 
 ## botao enviar mensagens
-btn_envio = Button(root, text="Enviar mensagens", command=enviar_mensagem, width=15)
+btn_envio = Button(root, text="Enviar mensagens", command=lambda: enviar_mensagem(path_img), width=15)
 btn_envio.place(x=370, y=210)
 
 # mandatory
